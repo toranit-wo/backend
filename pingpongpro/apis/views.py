@@ -6,7 +6,7 @@ from pingponghit import models
 from .serializers import PingponghitSerializer
 
 
-class ListPingponghit(generics.CreateAPIView):
+class ListPingponghit(generics.ListCreateAPIView):
     queryset = models.Pingponghit.objects.all()
     
     serializer_class = PingponghitSerializer
