@@ -4,7 +4,7 @@ from django.db import models
 class Pingponghit(models.Model):
     title = models.CharField(max_length=100)
     data = models.TextField()
-    total = models.IntegerField(default=0)
 
-    def __str__(self):
-        return self.title
+class Totalhit(models.Model):
+    title = models.CharField(max_length=100)
+    total = models.IntegerField(default=0)

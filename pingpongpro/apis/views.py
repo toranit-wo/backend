@@ -44,12 +44,13 @@ def pingponghit_detail(request, pk):
 
     if request.method == 'GET':
         serializer = PingponghitSerializer(pingponghit)
-        title = serializer.data['title']
-        print(title)
-        # print (res)
         return JsonResponse(serializer.data)
 
     elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = PingponghitSerializer(pingponghit, data=data)
+        serializer.save()
+        
         #append data to list
         xaccele = []
         yaccele = []
@@ -59,9 +60,6 @@ def pingponghit_detail(request, pk):
         zgyro = []
         avg = 0
         listdata = []
-
-        data = JSONParser().parse(request)
-        serializer = PingponghitSerializer(pingponghit, data=data)
 
         if serializer.is_valid():
             sensor = json.loads(serializer.data['data'])
@@ -75,38 +73,28 @@ def pingponghit_detail(request, pk):
                 ygyro.append(g[1])
                 zgyro.append(g[2])
             
-
             if serializer.data['title'] == 'Forehand' :
-                #cal pingponghit accele
-                #cal by xaccele
+        
                 arrayXaccele = np.array(xaccele)
                 peaks, _ = find_peaks(arrayXaccele, distance=150)
                 np.diff(peaks)
 
-                #cal by yaccele
                 arrayYaccele = np.array(yaccele)
                 peaks, _ = find_peaks(arrayYaccele, distance=150)
                 np.diff(peaks)
-                
-                #cal by zaccele
+
                 arrayZaccele = np.array(zaccele)
                 peaks, _ = find_peaks(arrayZaccele, distance=150)
                 np.diff(peaks)
                 
-                #cal pingponghit gyro
-                #cal by xgyro
                 arrayXgyro = np.array(xgyro)
                 peaks, _ = find_peaks(arrayXgyro,height=2.5, distance=150)
                 np.diff(peaks)
                 
-                
-
                 arrayYgyro = np.array(xgyro)
                 peaks, _ = find_peaks(arrayYgyro,height=2.5, distance=150)
                 np.diff(peaks)
                 
-                
-
                 arrayZgyro = np.array(xgyro)
                 peaks, _ = find_peaks(arrayZgyro,height=2.5, distance=150)
                 np.diff(peaks)
@@ -117,36 +105,26 @@ def pingponghit_detail(request, pk):
                 avglist = sum(listdata)/len(listdata)
                 avg = int(avglist)
             else :
-                #cal pingponghit accele
-                #cal by xaccele
                 arrayXaccele = np.array(xaccele)
                 peaks, _ = find_peaks(arrayXaccele, distance=150)
                 np.diff(peaks)
 
-                #cal by yaccele
                 arrayYaccele = np.array(yaccele)
                 peaks, _ = find_peaks(arrayYaccele, distance=150)
                 np.diff(peaks)
                 
-                #cal by zaccele
                 arrayZaccele = np.array(zaccele)
                 peaks, _ = find_peaks(arrayZaccele, distance=150)
                 np.diff(peaks)
                 
-                #cal pingponghit gyro
-                #cal by xgyro
                 arrayXgyro = np.array(xgyro)
                 peaks, _ = find_peaks(arrayXgyro,height=2.5, distance=150)
                 np.diff(peaks)
                 
-                
-
                 arrayYgyro = np.array(xgyro)
                 peaks, _ = find_peaks(arrayYgyro,height=2.5, distance=150)
                 np.diff(peaks)
                 
-                
-
                 arrayZgyro = np.array(xgyro)
                 peaks, _ = find_peaks(arrayZgyro,height=2.5, distance=150)
                 np.diff(peaks)
@@ -156,8 +134,8 @@ def pingponghit_detail(request, pk):
                 listdata.append(len(arrayZgyro[peaks]))
                 avglist = sum(listdata)/len(listdata)
                 avg = int(avglist)
-
-            
+            total = serializer.data['total'] + avg
+            serializer = PingponghitSerializer(pingponghit, data=data)
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=400)

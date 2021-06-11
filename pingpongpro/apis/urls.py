@@ -6,5 +6,7 @@ from apis import views
 
 urlpatterns = [
     path('', views.pingponghit_list),
-    path('<int:pk>/', views.pingponghit_detail)
+    path('<int:pk>/', views.pingponghit_detail),
+    path('total/', views.pingponghit_list),
+    path('total/<int:pk>/', views.pingponghit_detail)
 ]

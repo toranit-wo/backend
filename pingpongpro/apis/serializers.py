@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from pingponghit.models import Pingponghit
+from pingponghit.models import Pingponghit,Totalhit
 
 
 class PingponghitSerializer(serializers.ModelSerializer):
@@ -9,8 +9,16 @@ class PingponghitSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'data',
-            'total'
         )
         model = Pingponghit
 
+class PingponghitSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        fields = (
+            'id',
+            'title',
+            'total'
+        )
+        model = Totalhit
 
