@@ -1,18 +1,11 @@
-from pingponghit.models import Pingponghit
+from pingponghit.models import Pingponghit,Totalhit
 from django.shortcuts import render
 from rest_framework import generics, serializers
 import json
-from datetime import datetime
-import pandas as pd
-from dateutil.parser import parse 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy import *
 from scipy.signal import *
-# Create your views here.
-from pingponghit import models
-from .serializers import PingponghitSerializer
+from .serializers import PingponghitSerializer,TotalhitSerializer
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
@@ -134,12 +127,51 @@ def pingponghit_detail(request, pk):
                 listdata.append(len(arrayZgyro[peaks]))
                 avglist = sum(listdata)/len(listdata)
                 avg = int(avglist)
-            total = serializer.data['total'] + avg
-            serializer = PingponghitSerializer(pingponghit, data=data)
-            serializer.save()
+            titals = serializer.data['tital']
+            totalhit = Totalhit(tital=titals,total=avg)
+            serializert = TotalhitSerializer(totalhit)
+            serializert.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
         pingponghit.delete()
+        return HttpResponse(status=204)
+
+@csrf_exempt
+def totalhit_list(request):
+    if request.method == 'GET':
+        totalhit = Totalhit.objects.all()
+        serializer = TotalhitSerializer(totalhit, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = TotalhitSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def totalhit_detail(request, pk):
+    try:
+        totalhit = Totalhit.objects.get(pk=pk)
+    except Totalhit.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = TotalhitSerializer(totalhit)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = TotalhitSerializer(totalhit, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        totalhit.delete()
         return HttpResponse(status=204)

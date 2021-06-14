@@ -12,7 +12,7 @@ class PingponghitSerializer(serializers.ModelSerializer):
         )
         model = Pingponghit
 
-class PingponghitSerializer(serializers.ModelSerializer):
+class TotalhitSerializer(serializers.ModelSerializer):
     
     class Meta:
         fields = (
