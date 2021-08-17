@@ -8,3 +8,6 @@ class Pingponghit(models.Model):
 class Totalhit(models.Model):
     title = models.CharField(max_length=100)
     total = models.IntegerField(default=0)
+    hitHavg = models.IntegerField(default=0)
+    hitCavg = models.IntegerField(default=0)
+    hitLavg = models.IntegerField(default=0)

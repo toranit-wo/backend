@@ -1,18 +1,10 @@
 from pingponghit.models import Pingponghit,Totalhit
-from django.shortcuts import render
-from rest_framework import generics, serializers
-import json
-import numpy as np
-from scipy import *
-from scipy.signal import *
 from .serializers import PingponghitSerializer,TotalhitSerializer
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 
 
-
-# class ListPingponghit(generics.ListCreateAPIView):
 @csrf_exempt
 def pingponghit_list(request):
     if request.method == 'GET':
@@ -42,95 +34,8 @@ def pingponghit_detail(request, pk):
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
         serializer = PingponghitSerializer(pingponghit, data=data)
-        serializer.save()
-        
-        #append data to list
-        xaccele = []
-        yaccele = []
-        zaccele = []
-        xgyro = []
-        ygyro = []
-        zgyro = []
-        avg = 0
-        listdata = []
-
         if serializer.is_valid():
-            sensor = json.loads(serializer.data['data'])
-            for a in sensor['accelerometer'] :
-                xaccele.append(a[0])
-                yaccele.append(a[1])
-                zaccele.append(a[2])
-            
-            for g in sensor['gyroscope']:
-                xgyro .append(g[0])
-                ygyro.append(g[1])
-                zgyro.append(g[2])
-            
-            if serializer.data['title'] == 'Forehand' :
-        
-                arrayXaccele = np.array(xaccele)
-                peaks, _ = find_peaks(arrayXaccele, distance=150)
-                np.diff(peaks)
-
-                arrayYaccele = np.array(yaccele)
-                peaks, _ = find_peaks(arrayYaccele, distance=150)
-                np.diff(peaks)
-
-                arrayZaccele = np.array(zaccele)
-                peaks, _ = find_peaks(arrayZaccele, distance=150)
-                np.diff(peaks)
-                
-                arrayXgyro = np.array(xgyro)
-                peaks, _ = find_peaks(arrayXgyro,height=2.5, distance=150)
-                np.diff(peaks)
-                
-                arrayYgyro = np.array(xgyro)
-                peaks, _ = find_peaks(arrayYgyro,height=2.5, distance=150)
-                np.diff(peaks)
-                
-                arrayZgyro = np.array(xgyro)
-                peaks, _ = find_peaks(arrayZgyro,height=2.5, distance=150)
-                np.diff(peaks)
-                
-                listdata.append(len(arrayXgyro[peaks]))
-                listdata.append(len(arrayYgyro[peaks]))
-                listdata.append(len(arrayZgyro[peaks]))
-                avglist = sum(listdata)/len(listdata)
-                avg = int(avglist)
-            else :
-                arrayXaccele = np.array(xaccele)
-                peaks, _ = find_peaks(arrayXaccele, distance=150)
-                np.diff(peaks)
-
-                arrayYaccele = np.array(yaccele)
-                peaks, _ = find_peaks(arrayYaccele, distance=150)
-                np.diff(peaks)
-                
-                arrayZaccele = np.array(zaccele)
-                peaks, _ = find_peaks(arrayZaccele, distance=150)
-                np.diff(peaks)
-                
-                arrayXgyro = np.array(xgyro)
-                peaks, _ = find_peaks(arrayXgyro,height=2.5, distance=150)
-                np.diff(peaks)
-                
-                arrayYgyro = np.array(xgyro)
-                peaks, _ = find_peaks(arrayYgyro,height=2.5, distance=150)
-                np.diff(peaks)
-                
-                arrayZgyro = np.array(xgyro)
-                peaks, _ = find_peaks(arrayZgyro,height=2.5, distance=150)
-                np.diff(peaks)
-                
-                listdata.append(len(arrayXgyro[peaks]))
-                listdata.append(len(arrayYgyro[peaks]))
-                listdata.append(len(arrayZgyro[peaks]))
-                avglist = sum(listdata)/len(listdata)
-                avg = int(avglist)
-            titals = serializer.data['tital']
-            totalhit = Totalhit(tital=titals,total=avg)
-            serializert = TotalhitSerializer(totalhit)
-            serializert.save()
+            serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=400)
 
